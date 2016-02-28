@@ -1,11 +1,13 @@
 module SklearnBase
 
+using MacroTools: @capture   # TODO: get rid of this dependency
+
 # These are the functions that should be implemented by estimators/transformers
 api = [:fit!, :transform, :fit_transform!,
        :predict, :predict_proba, :predict_log_proba,
        :score_samples, :sample,
        :score, :decision_function, :clone, :set_params!, :get_params,
-       :is_classifier, :is_pairwise, :get_feature_names,
+       :is_classifier, :is_pairwise, :get_feature_names, :get_classes,
        :inverse_transform]
 
 for f in api
@@ -14,7 +16,7 @@ for f in api
     @eval(export $f)
 end
 
-export @simple_model_constructor, BaseEstimator
+export @simple_estimator_constructor, BaseEstimator
 
 abstract BaseEstimator
 
@@ -79,17 +81,17 @@ define the `get_params`, `set_params!` and `clone` methods accordingly.
 There should be no logic, not even input validation, and the parameters should
 not be changed. The corresponding logic should be put where the parameters are
 used, typically in fit! """
-macro simple_model_constructor(function_definition)
+macro simple_estimator_constructor(function_definition)
     type_name, args, kwargs, body =
         parse_function_definition(function_definition)
     param_names = Symbol[parse_kwarg(kw)[1] for kw in kwargs]
     @assert isempty(args) "A @model_init function should accept only keyword arguments representing the model's hyper-parameters"
     :(begin
-        Skcore.get_params(estimator::$(esc(type_name)); deep=true) =
+        SklearnBase.get_params(estimator::$(esc(type_name)); deep=true) =
             simple_get_params(estimator, $param_names)
-        Skcore.set_params!(estimator::$(esc(type_name)); params...) =
+        SklearnBase.set_params!(estimator::$(esc(type_name)); params...) =
             simple_set_params!(estimator, params; param_names=$param_names)
-        Skcore.clone(estimator::$(esc(type_name))) =
+        SklearnBase.clone(estimator::$(esc(type_name))) =
             simple_clone(estimator)
         $(esc(:(function $type_name(; $(kwargs...))
             $(body...)
@@ -125,5 +127,41 @@ function set_params!(estimator::BaseEstimator; params...) # from base.py
     estimator
 end
 
+
+################################################################################
+
+""" `parse_function_definition(fdef)`
+
+Macro helper: parses the given function definition and returns
+`(fname::Symbol, args::Vector{Any}, kwargs::Vector{Any}, body::Vector{Any})`
+
+One can rebuild the function definition with
+`esc(:(function &fname (&(args...); &(kwargs...)) &(body...) end))`
+
+(replace the & with dollar sign - the docstring system didn't allow us to write
+it correctly) """
+function parse_function_definition(fdef)
+    if @capture(fdef, function fname_(args__; kwargs__) body__ end)
+        (fname, args, kwargs, body)
+    elseif @capture(fdef, function fname_(args__) body__ end)
+        (fname, args, Any[], body)
+    elseif @capture(fdef, (fname_(args__; kwargs__) = bexpr_))
+        (fname, args, kwargs, Any[bexpr])
+    elseif @capture(fdef, fname_(args__) = bexpr_)
+        (fname, args, Any[], Any[bexpr])
+    else
+        error("Not a function definition: $fdef")
+    end
+end
+
+
+""" `macro_keyword_args(kwarg)`
+
+Macro helper: if a function/macro definition contains x=y in an argument list,
+this will return (x, y) """ # TODO: add example
+function parse_kwarg(kwarg)
+    @assert kwarg.head == :kw
+    return (kwarg.args[1], kwarg.args[2])
+end
 
 end
