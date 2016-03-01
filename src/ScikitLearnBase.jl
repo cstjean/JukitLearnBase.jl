@@ -1,4 +1,4 @@
-module SklearnBase
+module ScikitLearnBase
 
 using MacroTools: @capture   # TODO: get rid of this dependency
 
