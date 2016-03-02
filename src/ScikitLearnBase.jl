@@ -87,11 +87,11 @@ macro simple_estimator_constructor(function_definition)
     param_names = Symbol[parse_kwarg(kw)[1] for kw in kwargs]
     @assert isempty(args) "A @model_init function should accept only keyword arguments representing the model's hyper-parameters"
     :(begin
-        SklearnBase.get_params(estimator::$(esc(type_name)); deep=true) =
+        ScikitLearnBase.get_params(estimator::$(esc(type_name)); deep=true) =
             simple_get_params(estimator, $param_names)
-        SklearnBase.set_params!(estimator::$(esc(type_name)); params...) =
+        ScikitLearnBase.set_params!(estimator::$(esc(type_name)); params...) =
             simple_set_params!(estimator, params; param_names=$param_names)
-        SklearnBase.clone(estimator::$(esc(type_name))) =
+        ScikitLearnBase.clone(estimator::$(esc(type_name))) =
             simple_clone(estimator)
         $(esc(:(function $type_name(; $(kwargs...))
             $(body...)
