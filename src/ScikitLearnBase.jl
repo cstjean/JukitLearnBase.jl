@@ -16,7 +16,8 @@ for f in api
     @eval(export $f)
 end
 
-export @simple_estimator_constructor, BaseEstimator
+export BaseEstimator
+export declare_hyperparameters
 
 abstract BaseEstimator
 
@@ -47,6 +48,23 @@ function simple_set_params!{T}(estimator::T, params; param_names=nothing)
 end
 
 simple_clone{T}(estimator::T) = T(; get_params(estimator)...)
+
+function declare_hyperparameters{T}(model_type::Type{T}, params::Vector{Symbol};
+                                    define_fit_transform=true)
+    @eval begin
+        ScikitLearnBase.get_params(estimator::$(model_type); deep=true) =
+            simple_get_params(estimator, $params)
+        ScikitLearnBase.set_params!(estimator::$(model_type);
+                                    new_params...) =
+            simple_set_params!(estimator, new_params; param_names=$params)
+        ScikitLearnBase.clone(estimator::$(model_type)) =
+            simple_clone(estimator)
+    end
+    if define_fit_transform
+        @eval fit_transform!(estimator::$model_type, X, y=nothing; fit_kwargs...) = transform(fit!(estimator, X, y; fit_kwargs...), X)
+    end
+end
+
 
 """
     @simple_estimator_constructor function SomeEstimator(; param_1=..., param_2=..., ...)
