@@ -14,5 +14,27 @@ does not contain any model (beyond a few special cases). It's up to Julia
 library writers to implement the scikit-learn API. The API is defined
 [here](docs/API.md). If your library implements the API and is registered in
 METADATA, please let us know by [filing an
-issue](https://github.com/cstjean/ScikitLearn.jl/issues). It will be added to the
-[list of models](http://scikitlearnjl.readthedocs.org/en/latest/models/).
+issue](https://github.com/cstjean/ScikitLearn.jl/issues). It will be added to
+the [list of models](http://scikitlearnjl.readthedocs.org/en/latest/models/).
+
+To implement the API, import ScikitLearnBase then define the functions your
+model implements:
+
+```julia
+
+import ScikitLearnBase
+
+type ModelName
+   ...
+end
+
+ScikitLearnBase.fit!(m::ModelName, X, y) = ...
+
+ScikitLearnBase.predict(...) = ...
+
+...
+
+```
+
+Depending on which functions you've implemented, the model can now be used
+in pipelines, cross-validation and grid-search.

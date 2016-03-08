@@ -92,9 +92,8 @@ In iterative algorithms, the number of iterations should be specified by an inte
 Most models will need:
 
 - `fit!`
-- `predict` / `predict_proba` for supervised learning
+- `predict` / `predict_proba` for supervised learning models, along with `is_classifier(::ModelType) = true/false`
 - `transform` for unsupervised learning
-- `is_classifier(::ModelType) = true/false`
 
 Given those, calling `declare_hyperparameters` at the top-level will
 automatically provide `set_params!`, `get_params`, `clone` and `fit_transform!`:
