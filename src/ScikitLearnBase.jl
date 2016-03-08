@@ -19,12 +19,6 @@ export BaseEstimator, declare_hyperparameters
 abstract BaseEstimator
 
 
-# I don't think this is necessary anymore.
-macro import_api()
-    # I wish `importall ..` worked
-    esc(:(begin $([Expr(:import, :., :., f) for f in api]...) end))
-end
-
 ################################################################################
 # These functions are useful for defining estimators that do not themselves
 # contain other estimators
