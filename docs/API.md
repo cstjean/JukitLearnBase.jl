@@ -1,4 +1,4 @@
-*(source: adapted from the [scikit-learn docs](http://scikit-learn.org/stable/developers/contributing.html#apis-of-scikit-learn-objects))
+*(adapted from the [scikit-learn docs](http://scikit-learn.org/stable/developers/contributing.html#apis-of-scikit-learn-objects))*
 
 # APIs of scikit-learn objects
 
@@ -85,7 +85,7 @@ Depending on the nature of the algorithm, `fit!` can sometimes also accept addit
 
 #### Optional Arguments
 
-In iterative algorithms, the number of iterations should be specified by an integer called n_iter.
+In iterative algorithms, the number of iterations should be specified by an integer called `n_iter`.
 
 ## Rolling your own estimator
 
@@ -97,11 +97,13 @@ Most models will need:
 - `is_classifier(::ModelType) = true/false`
 
 Given those, calling `declare_hyperparameters` at the top-level will
-automatically provide `set_params!`, `get_params`, `clone` and `fit_transform!`
+automatically provide `set_params!`, `get_params`, `clone` and `fit_transform!`:
 
-`declare_hyperparameters(ModelType, [:param1, :param2, ...])`
+```julia
+declare_hyperparameters(ModelType, [:param1, :param2, ...])
+```
 
-The only estimators that should not use `declare_hyperparameters` are those
+The only estimators that should not use `declare_hyperparameters` are those that contain other estimators (eg. boosting)
 
 #### Implementation tip
 
