@@ -39,7 +39,7 @@ function JukitLearnBase.fit!(model::NaiveBayes, X, y)
     .... # modify model.counts here
 end
 
-function JukitLearnBase.predict(model::GaussianProcess, X)
+function JukitLearnBase.predict(model::NaiveBayes, X)
     .... # returns a vector of predicted classes here
 end
 ```
