@@ -1,4 +1,4 @@
-module ScikitLearnBase
+module JukitLearnBase
 
 # These are the functions that should be implemented by estimators/transformers
 api = [:fit!, :transform, :fit_transform!,
@@ -59,16 +59,16 @@ manually. """
 function declare_hyperparameters{T}(model_type::Type{T}, params::Vector{Symbol};
                                     define_fit_transform=true)
     @eval begin
-        ScikitLearnBase.get_params(estimator::$(model_type); deep=true) =
+        JukitLearnBase.get_params(estimator::$(model_type); deep=true) =
             simple_get_params(estimator, $params)
-        ScikitLearnBase.set_params!(estimator::$(model_type);
+        JukitLearnBase.set_params!(estimator::$(model_type);
                                     new_params...) =
             simple_set_params!(estimator, new_params; param_names=$params)
-        ScikitLearnBase.clone(estimator::$(model_type)) =
+        JukitLearnBase.clone(estimator::$(model_type)) =
             simple_clone(estimator)
     end
     if define_fit_transform
-        @eval ScikitLearnBase.fit_transform!(estimator::$model_type, X, y=nothing; fit_kwargs...) = transform(fit!(estimator, X, y; fit_kwargs...), X)
+        @eval JukitLearnBase.fit_transform!(estimator::$model_type, X, y=nothing; fit_kwargs...) = transform(fit!(estimator, X, y; fit_kwargs...), X)
     end
 end
 

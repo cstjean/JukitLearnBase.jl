@@ -1,40 +1,69 @@
-ScikitLearnBase.jl
+JukitLearnBase.jl
 ------------
 
-This package exposes the interface to ScikitLearn.jl. If you are interested in
-implementing the ScikitLearn.jl interface for your machine learning algorithm,
-read on. If you just want to fit a model to some data, check out
-[ScikitLearn.jl](https://github.com/cstjean/ScikitLearn.jl)
+This package exposes the scikit-learn interface. Anyone can implement it for
+their machine learning algorithm, and use the utilities
+in [JukitLearn.jl](https://github.com/cstjean/ScikitLearn.jl)
+(pipelines, cross-validation, hyperparameter tuning, ...)
+
+This is an intentionally slim package (~50 LOC, no dependencies).
 
 Overview
 -----
 
-In contrast with [scikit-learn](scikit-learn.org), the ScikitLearn.jl library
-does not contain any model (beyond a few special cases). It's up to Julia
-library writers to implement the scikit-learn API. The API is defined
-[here](docs/API.md). If your library implements the API and is registered in
-METADATA, please let us know by [filing an
-issue](https://github.com/cstjean/ScikitLearn.jl/issues). It will be added to
-the [list of models](http://scikitlearnjl.readthedocs.org/en/latest/models/).
-
-To implement the API, import ScikitLearnBase then define the functions your
-model implements:
+There's a detailed description of the API [here](docs/API.md), but for most
+algorithms, this is all that's needed:
 
 ```julia
+import JukitLearnBase
 
-import ScikitLearnBase
+type NaiveBayes
+    # The model hyperparameters (not learned from data)
+    bias::Float64
 
-type ModelName
-   ...
+    # The parameters learned from data
+    counts::Vector{Float64}
+    
+    # A constructor that accepts the hyperparameters as keyword arguments
+    # with sensible defaults
+    NaiveBayes(; bias=0.0f0) = new(bias)
 end
 
-ScikitLearnBase.fit!(m::ModelName, X, y) = ...
+# This will define `clone`, `set_params!` and `get_params` for you
+declare_hyperparameters(NaiveBayes, [:bias])
 
-ScikitLearnBase.predict(...) = ...
+# NaiveBayes is a classifier
+is_classifier(::NaiveBayes) = true
 
-...
+function JukitLearnBase.fit!(model::NaiveBayes, X, y)
+    .... # modify model.counts here
+end
 
+function JukitLearnBase.predict(model::GaussianProcess, X)
+    .... # returns a vector of predicted classes here
+end
 ```
 
-Depending on which functions you've implemented, the model can now be used
-in pipelines, cross-validation and grid-search.
+You can try it out with `JukitLearn.CrossValidation.cross_val_score`
+
+Notes:
+
+- If your model performs unsupervised learning, implement `transform` instead of
+`predict`.
+- If your model is already coded up and the type does not contain
+hyperparameters (eg. if it follows the StatsBase interface), you can create a
+new type that contains the old one:
+
+```julia
+type SkNaiveBayes  # prefix the name with Sk
+    bias::Float64
+
+    nb::NaiveBayes
+    NaiveBayes(; bias=0.0f0) = new(bias)
+end
+```
+
+If your library implements the API and is registered in METADATA, let us know
+by [filing an issue](https://github.com/cstjean/JukitLearn.jl/issues). It will
+be added to the [list of
+models](http://scikitlearnjl.readthedocs.org/en/latest/models/).
