@@ -1,9 +1,9 @@
-JukitLearnBase.jl
+ScikitLearnBase.jl
 ------------
 
 This package exposes the scikit-learn interface. Anyone can implement it for
 their machine learning algorithm, and use the utilities
-in [JukitLearn.jl](https://github.com/cstjean/ScikitLearn.jl)
+in [ScikitLearn.jl](https://github.com/cstjean/ScikitLearn.jl)
 (pipelines, cross-validation, hyperparameter tuning, ...)
 
 This is an intentionally slim package (~50 LOC, no dependencies).
@@ -15,7 +15,7 @@ There's a detailed description of the API [here](docs/API.md), but for most
 algorithms, this is all that's needed:
 
 ```julia
-import JukitLearnBase
+import ScikitLearnBase
 
 type NaiveBayes
     # The model hyperparameters (not learned from data)
@@ -35,16 +35,16 @@ declare_hyperparameters(NaiveBayes, [:bias])
 # NaiveBayes is a classifier
 is_classifier(::NaiveBayes) = true
 
-function JukitLearnBase.fit!(model::NaiveBayes, X, y)
+function ScikitLearnBase.fit!(model::NaiveBayes, X, y)
     .... # modify model.counts here
 end
 
-function JukitLearnBase.predict(model::NaiveBayes, X)
+function ScikitLearnBase.predict(model::NaiveBayes, X)
     .... # returns a vector of predicted classes here
 end
 ```
 
-You can try it out with `JukitLearn.CrossValidation.cross_val_score`
+You can try it out with `ScikitLearn.CrossValidation.cross_val_score`
 
 Notes:
 
@@ -64,6 +64,6 @@ end
 ```
 
 If your library implements the API and is registered in METADATA, let us know
-by [filing an issue](https://github.com/cstjean/JukitLearn.jl/issues). It will
+by [filing an issue](https://github.com/cstjean/ScikitLearn.jl/issues). It will
 be added to the [list of
 models](http://scikitlearnjl.readthedocs.org/en/latest/models/).
