@@ -10,7 +10,7 @@ Overview
 -----
 
 There's a detailed description of the API [here](docs/API.md). For most
-algorithms, it boils down to these functions:
+algorithms, it boils down to this:
 
 ```julia
 import ScikitLearnBase
@@ -42,7 +42,7 @@ function ScikitLearnBase.predict(model::NaiveBayes, X)
 end
 ```
 
-You can now try it out with `ScikitLearn.CrossValidation.cross_val_score`
+You can try it out with `ScikitLearn.CrossValidation.cross_val_score`
 
 Notes:
 
