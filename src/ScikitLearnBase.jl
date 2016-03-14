@@ -1,7 +1,7 @@
 module ScikitLearnBase
 
-# These are the functions that should be implemented by estimators/transformers
-api = [:fit!, :transform, :fit_transform!,
+# These are the functions that can be implemented by estimators/transformers
+api = [:fit!, :partial_fit!, :transform, :fit_transform!,
        :predict, :predict_proba, :predict_log_proba,
        :score_samples, :sample,
        :score, :decision_function, :clone, :set_params!, :get_params,
