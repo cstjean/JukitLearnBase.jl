@@ -1,18 +1,16 @@
 ScikitLearnBase.jl
 ------------
 
-This package exposes the scikit-learn interface. Anyone can implement it for
-their machine learning algorithm, and use the utilities
-in [ScikitLearn.jl](https://github.com/cstjean/ScikitLearn.jl)
-(pipelines, cross-validation, hyperparameter tuning, ...)
+This package exposes the scikit-learn interface. Libraries that implement this
+interface can be used in conjunction with [ScikitLearn.jl](https://github.com/cstjean/ScikitLearn.jl) (pipelines, cross-validation, hyperparameter tuning, ...)
 
 This is an intentionally slim package (~50 LOC, no dependencies).
 
 Overview
 -----
 
-There's a detailed description of the API [here](docs/API.md), but for most
-algorithms, this is all that's needed:
+There's a detailed description of the API [here](docs/API.md). For most
+algorithms, it boils down to these functions:
 
 ```julia
 import ScikitLearnBase
@@ -33,7 +31,7 @@ end
 declare_hyperparameters(NaiveBayes, [:bias])
 
 # NaiveBayes is a classifier
-is_classifier(::NaiveBayes) = true
+is_classifier(::NaiveBayes) = true   # not required for transformers
 
 function ScikitLearnBase.fit!(model::NaiveBayes, X, y)
     .... # modify model.counts here
@@ -44,7 +42,7 @@ function ScikitLearnBase.predict(model::NaiveBayes, X)
 end
 ```
 
-You can try it out with `ScikitLearn.CrossValidation.cross_val_score`
+You can now try it out with `ScikitLearn.CrossValidation.cross_val_score`
 
 Notes:
 
@@ -63,7 +61,6 @@ type SkNaiveBayes  # prefix the name with Sk
 end
 ```
 
-If your library implements the API and is registered in METADATA, let us know
-by [filing an issue](https://github.com/cstjean/ScikitLearn.jl/issues). It will
-be added to the [list of
-models](http://scikitlearnjl.readthedocs.org/en/latest/models/).
+Once your library implements the API, let us know by [filing an
+issue](https://github.com/cstjean/ScikitLearn.jl/issues). It will be added to
+the [list of models](http://scikitlearnjl.readthedocs.org/en/latest/models/).
