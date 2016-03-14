@@ -41,34 +41,35 @@ end
 simple_clone{T}(estimator::T) = T(; get_params(estimator)...)
 
 """
-    function declare_hyperparameters{T}(model_type::Type{T}, params::Vector{Symbol};
+    function declare_hyperparameters{T}(estimator_type::Type{T}, params::Vector{Symbol};
                                         define_fit_transform=true)
 
 This function helps to implement the scikit-learn protocol for simple
 estimators (those that do not contain other estimators). It will define
-`set_params!`, `get_params`, `clone` and `fit_transform!` for `::model_type`.
-It is called at the top-level. Example:
+`set_params!`, `get_params`, `clone` and `fit_transform!` for
+`::estimator_type`. It is called at the top-level. Example:
 
     declare_hyperparameters(GaussianProcess, [:regularization_strength])
 
-Each parameter should be a field of `model_type`.
+Each parameter should be a field of `estimator_type`.
 
 Most models should call this function. The only exception are models that
 contain other models. They should implement `get_params` and `set_params!`
 manually. """
-function declare_hyperparameters{T}(model_type::Type{T}, params::Vector{Symbol};
+function declare_hyperparameters{T}(estimator_type::Type{T},
+                                    params::Vector{Symbol};
                                     define_fit_transform=true)
     @eval begin
-        ScikitLearnBase.get_params(estimator::$(model_type); deep=true) =
+        ScikitLearnBase.get_params(estimator::$(estimator_type); deep=true) =
             simple_get_params(estimator, $params)
-        ScikitLearnBase.set_params!(estimator::$(model_type);
+        ScikitLearnBase.set_params!(estimator::$(estimator_type);
                                     new_params...) =
             simple_set_params!(estimator, new_params; param_names=$params)
-        ScikitLearnBase.clone(estimator::$(model_type)) =
+        ScikitLearnBase.clone(estimator::$(estimator_type)) =
             simple_clone(estimator)
     end
     if define_fit_transform
-        @eval ScikitLearnBase.fit_transform!(estimator::$model_type, X, y=nothing; fit_kwargs...) = transform(fit!(estimator, X, y; fit_kwargs...), X)
+        @eval ScikitLearnBase.fit_transform!(estimator::$estimator_type, X, y=nothing; fit_kwargs...) = transform(fit!(estimator, X, y; fit_kwargs...), X)
     end
 end
 
