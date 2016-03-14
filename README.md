@@ -20,18 +20,18 @@ type NaiveBayes
     bias::Float64
 
     # The parameters learned from data
-    counts::Vector{Float64}
+    counts::Matrix{Float64}
     
     # A constructor that accepts the hyperparameters as keyword arguments
     # with sensible defaults
     NaiveBayes(; bias=0.0f0) = new(bias)
 end
 
-# This will define `clone`, `set_params!` and `get_params` for you
-declare_hyperparameters(NaiveBayes, [:bias])
+# This will define `clone`, `set_params!` and `get_params` for the model
+ScikitLearnBase.declare_hyperparameters(NaiveBayes, [:bias])
 
 # NaiveBayes is a classifier
-is_classifier(::NaiveBayes) = true   # not required for transformers
+ScikitLearnBase.is_classifier(::NaiveBayes) = true   # not required for transformers
 
 function ScikitLearnBase.fit!(model::NaiveBayes, X, y)
     .... # modify model.counts here
