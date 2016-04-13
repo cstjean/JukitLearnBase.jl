@@ -9,8 +9,8 @@ This is an intentionally slim package (~50 LOC, no dependencies).
 Overview
 -----
 
-There's a detailed description of the API [here](docs/API.md). For most
-algorithms, it boils down to this:
+There's a detailed description of the API [here](docs/API.md). For 
+models with simple hyperparameters, it boils down to this:
 
 ```julia
 import ScikitLearnBase
@@ -42,15 +42,19 @@ function ScikitLearnBase.predict(model::NaiveBayes, X)
 end
 ```
 
-You can try it out with `ScikitLearn.CrossValidation.cross_val_score`
+You can try it out with `ScikitLearn.CrossValidation.cross_val_score`. Models
+with more complex hyperparameter specifications should implement `clone`,
+`get_params` and `set_params!` explicitly instead of calling
+`declare_hyperparameters`.
 
 Notes:
 
-- If your model performs unsupervised learning, implement `transform` instead of
+- If the model performs unsupervised learning, implement `transform` instead of
 `predict`.
-- If your model is already coded up and the type does not contain
-hyperparameters (eg. if it follows the StatsBase interface), you can create a
-new type that contains the old one:
+- If the model is already coded up and the type does not contain
+hyperparameters (eg. if it follows the StatsBase interface, or if you're
+implementing the interface for someone else's library), you can create a new
+type that contains the old one:
 
 ```julia
 type SkNaiveBayes  # prefix the name with Sk
