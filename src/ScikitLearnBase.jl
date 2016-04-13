@@ -1,3 +1,5 @@
+__precompile__()
+
 module ScikitLearnBase
 
 # These are the functions that can be implemented by estimators/transformers
