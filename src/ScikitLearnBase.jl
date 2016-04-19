@@ -2,19 +2,21 @@ __precompile__()
 
 module ScikitLearnBase
 
-# These are the functions that can be implemented by estimators/transformers
-api = [:fit!, :partial_fit!, :transform, :fit_transform!,
-       :predict, :predict_proba, :predict_log_proba,
-       :score_samples, :sample,
-       :score, :decision_function, :clone, :set_params!, :get_params,
-       :is_classifier, :is_pairwise, :get_feature_names, :get_classes,
-       :inverse_transform]
-
-for f in api
-    eval(Expr(:function, f))  # forward declaration
-    # Export all the API. Not sure if we should do that...
-    @eval(export $f)
+macro declare_api(api_functions...)
+    esc(:(begin
+        $([Expr(:function, f) for f in api_functions]...)
+        $([:(export $f) for f in api_functions]...)
+        const api = [$([Expr(:quote, x) for x in api_functions]...)]
+    end))
 end
+# These are the functions that can be implemented by estimators/transformers
+@declare_api(fit!, partial_fit!, transform, fit_transform!,
+             predict, predict_proba, predict_log_proba,
+             score_samples, sample,
+             score, decision_function, clone, set_params!,
+             get_params, is_classifier, is_pairwise,
+             get_feature_names, get_classes,
+             inverse_transform)
 
 export BaseEstimator, declare_hyperparameters
 
