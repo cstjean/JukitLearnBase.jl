@@ -4,7 +4,9 @@ ScikitLearnBase.jl
 This package exposes the scikit-learn interface. Libraries that implement this
 interface can be used in conjunction with [ScikitLearn.jl](https://github.com/cstjean/ScikitLearn.jl) (pipelines, cross-validation, hyperparameter tuning, ...)
 
-This is an intentionally slim package (~50 LOC, no dependencies).
+This is an intentionally slim package (~50 LOC, no dependencies). That way,
+ML libraries can `import ScikitLearnBase` without dragging along all of
+`ScikitLearn`'s dependencies.
 
 Overview
 -----
@@ -20,7 +22,7 @@ type NaiveBayes
     bias::Float64
 
     # The parameters learned from data
-    counts::Matrix{Float64}
+    counts::Matrix{Int}
     
     # A constructor that accepts the hyperparameters as keyword arguments
     # with sensible defaults
