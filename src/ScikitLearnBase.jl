@@ -9,7 +9,8 @@ macro declare_api(api_functions...)
     esc(:(begin
         $([VERSION >= v"0.4.0" ? Expr(:function, f) : :(function $f() end)
            for f in api_functions]...)
-        $([:(export $f) for f in api_functions]...)
+        # Expr(:export, f) necessary in Julia 0.3
+        $([Expr(:export, f) for f in api_functions]...)
         const api = [$([Expr(:quote, x) for x in api_functions]...)]
     end))
 end
@@ -24,8 +25,10 @@ end
 
 export BaseEstimator, declare_hyperparameters
 
+# Ideally, all scikit-learn estimators would inherit from BaseEstimator, but
+# it's hard to ask library writers to do that given single-inheritance, so the
+# API doesn't rely on it.
 abstract BaseEstimator
-
 
 ################################################################################
 # These functions are useful for defining estimators that do not themselves
