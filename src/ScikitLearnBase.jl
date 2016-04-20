@@ -1,10 +1,14 @@
-__precompile__()
+VERSION >= v"0.4.0" && __precompile__()
 
 module ScikitLearnBase
 
 macro declare_api(api_functions...)
+    # GaussianMixtures supports Julia 0.3, so we need to account for it here.
+    # ScikitLearn.jl won't support it, so it's mostly a matter of not
+    # triggering any error.
     esc(:(begin
-        $([Expr(:function, f) for f in api_functions]...)
+        $([VERSION >= v"0.4.0" ? Expr(:function, f) : :(function $f() end)
+           for f in api_functions]...)
         $([:(export $f) for f in api_functions]...)
         const api = [$([Expr(:quote, x) for x in api_functions]...)]
     end))
