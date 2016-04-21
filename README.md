@@ -11,8 +11,10 @@ ML libraries can `import ScikitLearnBase` without dragging along all of
 Overview
 -----
 
-There's a detailed description of the API [here](docs/API.md). For 
-models with simple hyperparameters, it boils down to this:
+There's an overview of the API
+[here](http://scikitlearnjl.readthedocs.org/en/latest/api/) and a more detailed
+description [here](docs/API.md). For models with simple hyperparameters, it
+boils down to this:
 
 ```julia
 import ScikitLearnBase
@@ -48,6 +50,9 @@ You can try it out with `ScikitLearn.CrossValidation.cross_val_score`. Models
 with more complex hyperparameter specifications should implement `clone`,
 `get_params` and `set_params!` explicitly instead of calling
 `declare_hyperparameters`.
+
+The interface has been implemented for a few libraries, see PRs:
+[GaussianMixtures.jl](https://github.com/davidavdav/GaussianMixtures.jl/pull/18), [GaussianProcesses.jl](https://github.com/STOR-i/GaussianProcesses.jl/pull/17)
 
 Notes:
 
