@@ -4,7 +4,7 @@ ScikitLearnBase.jl
 This package exposes the scikit-learn interface. Libraries that implement this
 interface can be used in conjunction with [ScikitLearn.jl](https://github.com/cstjean/ScikitLearn.jl) (pipelines, cross-validation, hyperparameter tuning, ...)
 
-This is an intentionally slim package (~50 LOC, no dependencies). That way,
+This is an intentionally slim package (~80 LOC, no dependencies). That way,
 ML libraries can `import ScikitLearnBase` without dragging along all of
 `ScikitLearn`'s dependencies.
 

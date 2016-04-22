@@ -24,12 +24,17 @@ end
              get_feature_names, get_classes,
              inverse_transform)
 
-export BaseEstimator, declare_hyperparameters
+export BaseEstimator, BaseClassifier, BaseRegressor, declare_hyperparameters
 
 # Ideally, all scikit-learn estimators would inherit from BaseEstimator, but
 # it's hard to ask library writers to do that given single-inheritance, so the
 # API doesn't rely on it.
 abstract BaseEstimator
+abstract BaseClassifier <: BaseEstimator
+abstract BaseRegressor <: BaseEstimator
+
+is_classifier(::BaseClassifier) = true
+is_classifier(::BaseRegressor) = false
 
 # This hasn't been used so far, but it seems like it should be useful at some
 # point, and it doesn't cost much.
@@ -89,6 +94,38 @@ function declare_hyperparameters{T}(estimator_type::Type{T},
         @eval ScikitLearnBase.fit_transform!(estimator::$estimator_type, X, y=nothing; fit_kwargs...) = transform(fit!(estimator, X, y; fit_kwargs...), X)
     end
 end
+
+################################################################################
+# Standard scoring functions (those are good defaults)
+
+# Helper
+function weighted_sum(sample_score, sample_weight; normalize=false)
+    if sample_weight === nothing
+        return normalize ? mean(sample_score) : sum(sample_score)
+    else
+        s = dot(sample_score, sample_weight)
+        return normalize ? (s / sum(sample_weight)) : s
+    end
+end
+
+# scikit-learn's version is fancier, but I would rather KISS for now
+function classifier_accuracy_score(y_true::Vector, y_pred::Vector;
+                                   normalize=true, sample_weight=nothing)
+    weighted_sum(y_true.==y_pred, sample_weight, normalize=normalize)
+end
+
+function mean_squared_error(y_true::Vector, y_pred::Vector;
+                            sample_weight=nothing)
+    weighted_sum((y_true - y_pred) .^ 2, sample_weight; normalize=true)
+end
+mse_score(y_true, y_pred; sample_weight=nothing) =
+    -mean_squared_error(y_true, y_pred; sample_weight=sample_weight)
+
+score(clf::BaseClassifier, X, y_true; sample_weight=nothing) =
+    classifier_accuracy_score(y_true, predict(clf, X);
+                              sample_weight=sample_weight)
+score(reg::BaseRegressor, X, y_true; sample_weight=nothing) =
+    mse_score(y_true, predict(reg, X); sample_weight=sample_weight)
 
 
 ################################################################################
