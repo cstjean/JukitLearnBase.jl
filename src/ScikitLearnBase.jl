@@ -14,8 +14,9 @@ macro declare_api(api_functions...)
         const api = [$([Expr(:quote, x) for x in api_functions]...)]
     end))
 end
-# These are the functions that can be implemented by estimators/transformers
-@declare_api(fit!, partial_fit!, transform, fit_transform!,
+# These are the functions that can be implemented by estimators/transformers.
+# See http://scikitlearnjl.readthedocs.org/en/latest/api/
+@declare_api(fit!, partial_fit!, transform, fit_transform!, fit_predict!,
              predict, predict_proba, predict_log_proba,
              score_samples, sample,
              score, decision_function, clone, set_params!,
@@ -30,6 +31,8 @@ export BaseEstimator, declare_hyperparameters
 # API doesn't rely on it.
 abstract BaseEstimator
 
+# This hasn't been used so far, but it seems like it should be useful at some
+# point, and it doesn't cost much.
 implements_scikitlearn_api(estimator) = false   # global default
 implements_scikitlearn_api(estimator::BaseEstimator) = true
 
@@ -93,6 +96,7 @@ end
 
 fit_transform!(estimator::BaseEstimator, X, y=nothing; fit_kwargs...) =
     transform(fit!(estimator, X, y; fit_kwargs...), X)
-
+fit_predict!(estimator::BaseEstimator, X, y=nothing; fit_kwargs...) =
+    predict(fit!(estimator, X, y; fit_kwargs...), X)
 
 end
