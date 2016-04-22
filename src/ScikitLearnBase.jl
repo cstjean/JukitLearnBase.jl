@@ -30,6 +30,9 @@ export BaseEstimator, declare_hyperparameters
 # API doesn't rely on it.
 abstract BaseEstimator
 
+implements_scikitlearn_api(estimator) = false   # global default
+implements_scikitlearn_api(estimator::BaseEstimator) = true
+
 ################################################################################
 # These functions are useful for defining estimators that do not themselves
 # contain other estimators
