@@ -21,7 +21,7 @@ end
              score_samples, sample,
              score, decision_function, clone, set_params!,
              get_params, is_classifier, is_pairwise,
-             get_feature_names, get_classes,
+             get_feature_names, get_classes, get_components,
              inverse_transform)
 
 export BaseEstimator, BaseClassifier, BaseRegressor, declare_hyperparameters
