@@ -109,7 +109,7 @@ function classifier_accuracy_score(y_true::Vector, y_pred::Vector;
     weighted_sum(y_true.==y_pred, sample_weight, normalize=normalize)
 end
 
-function mean_squared_error(y_true::Vector, y_pred::Vector;
+function mean_squared_error(y_true::AbstractVector, y_pred::AbstractVector;
                             sample_weight=nothing)
     weighted_sum((y_true - y_pred) .^ 2, sample_weight; normalize=true)
 end
