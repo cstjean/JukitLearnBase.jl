@@ -32,7 +32,7 @@ type NaiveBayes
 end
 
 # This will define `clone`, `set_params!` and `get_params` for the model
-ScikitLearnBase.declare_hyperparameters(NaiveBayes, [:bias])
+ScikitLearnBase.@declare_hyperparameters(NaiveBayes, [:bias])
 
 # NaiveBayes is a classifier
 ScikitLearnBase.is_classifier(::NaiveBayes) = true   # not required for transformers
@@ -48,8 +48,8 @@ end
 
 You can try it out with `ScikitLearn.CrossValidation.cross_val_score`. Models
 with more complex hyperparameter specifications should implement `clone`,
-`get_params` and `set_params!` explicitly instead of calling
-`declare_hyperparameters`.
+`get_params` and `set_params!` explicitly instead of using
+`@declare_hyperparameters`.
 
 The interface has been implemented for a few libraries, see PRs:
 [GaussianMixtures.jl](https://github.com/davidavdav/GaussianMixtures.jl/pull/18), [GaussianProcesses.jl](https://github.com/STOR-i/GaussianProcesses.jl/pull/17)

@@ -19,7 +19,7 @@ type NaiveBayes
 end
 
 # This will define `clone`, `set_params!` and `get_params` for the model
-declare_hyperparameters(NaiveBayes, [:bias])
+@declare_hyperparameters(NaiveBayes, [:bias])
 
 # NaiveBayes is a classifier
 is_classifier(::NaiveBayes) = true
