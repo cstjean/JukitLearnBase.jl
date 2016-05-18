@@ -24,7 +24,8 @@ end
              get_feature_names, get_classes, get_components,
              inverse_transform)
 
-export BaseEstimator, BaseClassifier, BaseRegressor, declare_hyperparameters
+export BaseEstimator, BaseClassifier, BaseRegressor, declare_hyperparameters,
+       @declare_hyperparameters
 
 # Ideally, all scikit-learn estimators would inherit from BaseEstimator, but
 # it's hard to ask library writers to do that given single-inheritance, so the
@@ -88,6 +89,18 @@ function declare_hyperparameters{T}(estimator_type::Type{T},
         ScikitLearnBase.clone(estimator::$(estimator_type)) =
             simple_clone(estimator)
     end
+end
+
+macro declare_hyperparameters(estimator_type, params)
+    :(begin
+        ScikitLearnBase.get_params(estimator::$(esc(estimator_type));deep=true)=
+            simple_get_params(estimator, $(esc(params)))
+        ScikitLearnBase.set_params!(estimator::$(esc(estimator_type));
+                                    new_params...) =
+            simple_set_params!(estimator, new_params;param_names=$(esc(params)))
+        ScikitLearnBase.clone(estimator::$(esc(estimator_type))) =
+            simple_clone(estimator)
+    end)
 end
 
 ################################################################################
