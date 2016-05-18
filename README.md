@@ -74,4 +74,4 @@ end
 
 Once your library implements the API, let us know by [filing an
 issue](https://github.com/cstjean/ScikitLearn.jl/issues). It will be added to
-the [list of models](http://scikitlearnjl.readthedocs.org/en/latest/models/).
+the [list of models](http://scikitlearnjl.readthedocs.io/en/latest/models/#julia-models).
