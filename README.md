@@ -39,6 +39,7 @@ ScikitLearnBase.is_classifier(::NaiveBayes) = true   # not required for transfor
 
 function ScikitLearnBase.fit!(model::NaiveBayes, X, y)
     .... # modify model.counts here
+    return model
 end
 
 function ScikitLearnBase.predict(model::NaiveBayes, X)
