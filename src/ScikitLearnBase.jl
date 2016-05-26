@@ -61,25 +61,18 @@ function simple_set_params!{T}(estimator::T, params; param_names=nothing)
     estimator
 end
 
-simple_clone{T}(estimator::T) = T(; get_params(estimator)...)
+# See also https://github.com/JuliaLang/julia/pull/15546
+# `clone_param` allows me to easily customize certain special values, like RNG
+clone_param(v::Any) = v # fall-back
+clone_param(rng::MersenneTwister) = deepcopy(rng)   # Julia issue #15698
+function simple_clone{T}(estimator::T)
+    # cloning the values is scikit-learn's default behaviour. It's ok?
+    return T(; Dict([k=>clone_param(v) for (k, v) in get_params(estimator)])...)
+end
 
-"""
-    function declare_hyperparameters{T}(estimator_type::Type{T}, params::Vector{Symbol})
-
-This function helps to implement the scikit-learn protocol for simple
-estimators (those that do not contain other estimators). It will define
-`set_params!`, `get_params` and `clone` for `::estimator_type`.
-It is called at the top-level. Example:
-
-    declare_hyperparameters(GaussianProcess, [:regularization_strength])
-
-Each parameter should be a field of `estimator_type`.
-
-Most models should call this function. The only exception are models that
-contain other models. They should implement `get_params` and `set_params!`
-manually. """
 function declare_hyperparameters{T}(estimator_type::Type{T},
                                     params::Vector{Symbol})
+    # TODO: deprecate in favor of @declare_hyperparameters
     @eval begin
         ScikitLearnBase.get_params(estimator::$(estimator_type); deep=true) =
             simple_get_params(estimator, $params)
@@ -91,6 +84,21 @@ function declare_hyperparameters{T}(estimator_type::Type{T},
     end
 end
 
+"""
+    @declare_hyperparameters(estimator_type::Type{T}, params::Vector{Symbol})
+
+This top-level macro helps to implement the scikit-learn protocol for simple
+estimators (those that do not contain other estimators). It will define
+`set_params!`, `get_params` and `clone` for `::estimator_type`.
+It is called at the top-level. Example:
+
+    @declare_hyperparameters(GaussianProcess, [:regularization_strength])
+
+Each parameter should be a field of `estimator_type`.
+
+Most models should call this function. The only exception are models that
+contain other models. They should implement `get_params` and `set_params!`
+manually. """
 macro declare_hyperparameters(estimator_type, params)
     :(begin
         ScikitLearnBase.get_params(estimator::$(esc(estimator_type));deep=true)=
