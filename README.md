@@ -73,6 +73,6 @@ type SkNaiveBayes  # prefix the name with Sk
 end
 ```
 
-Once your library implements the API, let us know by [filing an
-issue](https://github.com/cstjean/ScikitLearn.jl/issues). It will be added to
+Once your library implements the API, [file an
+issue/PR](https://github.com/cstjean/ScikitLearn.jl/issues) to add it to
 the [list of models](http://scikitlearnjl.readthedocs.io/en/latest/models/#julia-models).
