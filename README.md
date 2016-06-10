@@ -11,13 +11,11 @@ ML libraries can `import ScikitLearnBase` without dragging along all of
 Overview
 -----
 
-There's an overview of the API
-[here](http://scikitlearnjl.readthedocs.org/en/latest/api/) and a more detailed
-description [here](docs/API.md).
+The docs contain [an overview of the API](http://scikitlearnjl.readthedocs.org/en/latest/api/) and a [more thorough specification](docs/API.md).
 
-There are two implementation strategies interface for an existing library:
+There are two implementation strategies for an existing library:
 
- - *Create a new type that wraps the existing type*. The new type can usually be written entirely on top of the existing codebase (without modifying it). This gives more implementation freedom, and a more consistent interface amongst the various ScikitLearn.jl models. Here's an [example](https://github.com/cstjean/DecisionTree.jl/blob/2722950c8f0c5e5c62204364308e28d4123383cb/src/scikitlearnAPI.jl) from DecisionTree.jl
+ - *Create a new type that wraps the existing type*. The new type can usually be written entirely on top of the existing codebase (i.e. without modifying it). This gives more implementation freedom, and a more consistent interface amongst the various ScikitLearn.jl models. Here's an [example](https://github.com/cstjean/DecisionTree.jl/blob/2722950c8f0c5e5c62204364308e28d4123383cb/src/scikitlearnAPI.jl) from DecisionTree.jl
  - *Adapt the existing type*. This requires less code, and is usually better when the model type already contains the hyperparameters / fitting arguments.
 
 Example
@@ -61,7 +59,7 @@ with more complex hyperparameter specifications should implement `clone`,
 `get_params` and `set_params!` explicitly instead of using
 `@declare_hyperparameters`. 
 
-More examples of PRs that implement the interface: [GaussianMixtures.jl](https://github.com/davidavdav/GaussianMixtures.jl/pull/18), [GaussianProcesses.jl](https://github.com/STOR-i/GaussianProcesses.jl/pull/17)
+More examples of PRs that implement the interface: [GaussianMixtures.jl](https://github.com/davidavdav/GaussianMixtures.jl/pull/18/files), [GaussianProcesses.jl](https://github.com/STOR-i/GaussianProcesses.jl/pull/17/files), [DecisionTree.jl](https://github.com/bensadeghi/DecisionTree.jl/pull/29/files), [LowRankModels.jl](https://github.com/madeleineudell/LowRankModels.jl/pull/56/files)
 
 Note: if the model performs unsupervised learning, implement `transform`
 instead of `predict`.
