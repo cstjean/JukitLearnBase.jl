@@ -47,8 +47,10 @@ implements_scikitlearn_api(estimator::BaseEstimator) = true
 # contain other estimators
 
 function simple_get_params(estimator, param_names::Vector{Symbol})
-    Dict([name => getfield(estimator, name)
-          for name in param_names])
+    # Not written as a comprehension for 0.3/0.5 compatibility
+    di = Dict{Symbol, Any}()
+    for name in param_names di[name] = getfield(estimator, name) end
+    di
 end
 
 function simple_set_params!{T}(estimator::T, params; param_names=nothing)
@@ -66,8 +68,10 @@ end
 clone_param(v::Any) = v # fall-back
 clone_param(rng::MersenneTwister) = deepcopy(rng)   # Julia issue #15698
 function simple_clone{T}(estimator::T)
+    kw_params = Dict{Symbol, Any}()
     # cloning the values is scikit-learn's default behaviour. It's ok?
-    return T(; Dict([k=>clone_param(v) for (k, v) in get_params(estimator)])...)
+    for (k, v) in get_params(estimator) kw_params[k] = clone_param(v) end
+    return T(; kw_params...)
 end
 
 function declare_hyperparameters{T}(estimator_type::Type{T},
@@ -125,15 +129,14 @@ function weighted_sum(sample_score, sample_weight; normalize=false)
 end
 
 # scikit-learn's version is fancier, but I would rather KISS for now
-function classifier_accuracy_score(y_true::Vector, y_pred::Vector;
-                                   normalize=true, sample_weight=nothing)
+classifier_accuracy_score(y_true::Vector, y_pred::Vector;
+                          normalize=true, sample_weight=nothing) =
     weighted_sum(y_true.==y_pred, sample_weight, normalize=normalize)
-end
 
-function mean_squared_error(y_true::AbstractVector, y_pred::AbstractVector;
-                            sample_weight=nothing)
+mean_squared_error(y_true::AbstractVector, y_pred::AbstractVector;
+                   sample_weight=nothing) =
     weighted_sum((y_true - y_pred) .^ 2, sample_weight; normalize=true)
-end
+
 mse_score(y_true, y_pred; sample_weight=nothing) =
     -mean_squared_error(y_true, y_pred; sample_weight=sample_weight)
 
