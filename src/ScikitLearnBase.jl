@@ -13,7 +13,7 @@ end
 # These are the functions that can be implemented by estimators/transformers.
 # See http://scikitlearnjl.readthedocs.org/en/latest/api/
 @declare_api(fit!, partial_fit!, transform, fit_transform!, fit_predict!,
-             predict, predict_proba, predict_log_proba,
+             predict, predict_proba, predict_log_proba, predict_dist,
              score_samples, sample,
              score, decision_function, clone, set_params!,
              get_params, is_classifier, is_pairwise,
@@ -62,7 +62,7 @@ end
 # See also https://github.com/JuliaLang/julia/pull/15546
 # `clone_param` allows me to easily customize certain special values, like RNG
 clone_param(v::Any) = v # fall-back
-clone_param(rng::MersenneTwister) = deepcopy(rng)   # Julia issue #15698
+clone_param(rng::MersenneTwister) = deepcopy(rng) # issue #15698. Solved in 0.5
 function simple_clone{T}(estimator::T)
     kw_params = Dict{Symbol, Any}()
     # cloning the values is scikit-learn's default behaviour. It's ok?
@@ -101,12 +101,13 @@ contain other models. They should implement `get_params` and `set_params!`
 manually. """
 macro declare_hyperparameters(estimator_type, params)
     :(begin
-        ScikitLearnBase.get_params(estimator::$(esc(estimator_type));deep=true)=
+        $ScikitLearnBase.get_params(estimator::$(esc(estimator_type));
+                                    deep=true) =
             simple_get_params(estimator, $(esc(params)))
-        ScikitLearnBase.set_params!(estimator::$(esc(estimator_type));
+        $ScikitLearnBase.set_params!(estimator::$(esc(estimator_type));
                                     new_params...) =
             simple_set_params!(estimator, new_params;param_names=$(esc(params)))
-        ScikitLearnBase.clone(estimator::$(esc(estimator_type))) =
+        $ScikitLearnBase.clone(estimator::$(esc(estimator_type))) =
             simple_clone(estimator)
     end)
 end
