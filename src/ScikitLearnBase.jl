@@ -72,7 +72,7 @@ end
 
 function declare_hyperparameters{T}(estimator_type::Type{T},
                                     params::Vector{Symbol})
-    # TODO: deprecate in favor of @declare_hyperparameters
+    warn("declare_hyperparameters(...) is deprecated. Use @declare_hyperparameters(...) instead.")
     @eval begin
         ScikitLearnBase.get_params(estimator::$(estimator_type); deep=true) =
             simple_get_params(estimator, $params)
