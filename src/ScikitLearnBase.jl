@@ -42,10 +42,10 @@ implements_scikitlearn_api(estimator::BaseEstimator) = true
 # These functions are useful for defining estimators that do not themselves
 # contain other estimators
 
-function simple_get_params(estimator, param_names::Vector{Symbol})
+function simple_get_params(estimator, param_names::Vector)
     # Not written as a comprehension for 0.3/0.5 compatibility
     di = Dict{Symbol, Any}()
-    for name in param_names di[name] = getfield(estimator, name) end
+    for name::Symbol in param_names di[name] = getfield(estimator, name) end
     di
 end
 
