@@ -43,10 +43,10 @@ probs_X_C(nb::NaiveBayes) = nb.counts ./ sum(nb.counts, 1)
 prior_C(nb::NaiveBayes) = nb.class_counts ./ sum(nb.class_counts)
 
 function predict_proba(nb::NaiveBayes, X::Matrix{Bool})
-    p_mat = log(probs_X_C(nb))
-    pnot_mat = log(1-probs_X_C(nb))
-    prior_mat = log(prior_C(nb))
-    out = exp((X * p_mat + 0 * !X * pnot_mat) .+ prior_mat')
+    p_mat = log.(probs_X_C(nb))
+    pnot_mat = log.(1-probs_X_C(nb))
+    prior_mat = log.(prior_C(nb))
+    out = exp.((X * p_mat + 0 * .!X * pnot_mat) .+ prior_mat')
     out ./ sum(out, 2) # normalize
 end
 
@@ -62,4 +62,4 @@ Y = [1, 1, 2, 1]
 nb = fit!(NaiveBayes(), X, Y)
 
 # Check that the results are the same as scikit-learn's
-@test_approx_eq mean(predict_proba(nb, X)[:,1]) 0.76931818181818
+@test isapprox(mean(predict_proba(nb, X)[:,1]), 0.76931818181818)
