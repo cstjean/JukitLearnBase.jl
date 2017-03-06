@@ -46,7 +46,8 @@ function predict_proba(nb::NaiveBayes, X::Matrix{Bool})
     p_mat = log.(probs_X_C(nb))
     pnot_mat = log.(1-probs_X_C(nb))
     prior_mat = log.(prior_C(nb))
-    out = exp.((X * p_mat + 0 * .!X * pnot_mat) .+ prior_mat')
+    # .! is not valid prior to Julia 0.6
+    out = exp.((X * p_mat + 0 * map((!), X) * pnot_mat) .+ prior_mat')
     out ./ sum(out, 2) # normalize
 end
 
