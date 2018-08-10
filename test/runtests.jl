@@ -1,11 +1,11 @@
-importall ScikitLearnBase
-
-using Base.Test
+using ScikitLearnBase
+using Test
+using Statistics
 
 ################################################################################
 # We implement NaiveBayes
 
-type NaiveBayes
+mutable struct NaiveBayes
     # The model hyperparameters (not learned from data)
     bias::Float64
 
@@ -39,16 +39,16 @@ end
 
 
 # P(X_i|C_k)
-probs_X_C(nb::NaiveBayes) = nb.counts ./ sum(nb.counts, 1)
+probs_X_C(nb::NaiveBayes) = nb.counts ./ sum(nb.counts, dims=1)
 prior_C(nb::NaiveBayes) = nb.class_counts ./ sum(nb.class_counts)
 
 function predict_proba(nb::NaiveBayes, X::Matrix{Bool})
     p_mat = log.(probs_X_C(nb))
-    pnot_mat = log.(1-probs_X_C(nb))
+    pnot_mat = log.(1.0 .- probs_X_C(nb))
     prior_mat = log.(prior_C(nb))
     # .! is not valid prior to Julia 0.6
     out = exp.((X * p_mat + 0 * map((!), X) * pnot_mat) .+ prior_mat')
-    out ./ sum(out, 2) # normalize
+    out ./ sum(out, dims=2) # normalize
 end
 
 ################################################################################

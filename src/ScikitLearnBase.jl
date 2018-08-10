@@ -3,6 +3,7 @@ __precompile__()
 module ScikitLearnBase
 
 using Compat
+using Random
 
 macro declare_api(api_functions...)
     esc(:(begin
@@ -51,7 +52,7 @@ function simple_get_params(estimator, param_names::Vector)
     di
 end
 
-function simple_set_params!{T}(estimator::T, params; param_names=nothing)
+function simple_set_params!(estimator::T, params; param_names=nothing) where {T}
     for (k, v) in params
         if param_names !== nothing && !(k in param_names)
             throw(ArgumentError("An estimator of type $T was passed the invalid hyper-parameter $k. Valid hyper-parameters: $param_names"))
@@ -64,16 +65,16 @@ end
 # See also https://github.com/JuliaLang/julia/pull/15546
 # `clone_param` allows me to easily customize certain special values, like RNG
 clone_param(v::Any) = v # fall-back
-clone_param(rng::MersenneTwister) = deepcopy(rng) # issue #15698. Solved in 0.5
-function simple_clone{T}(estimator::T)
+clone_param(rng::Random.MersenneTwister) = deepcopy(rng) # issue #15698. Solved in 0.5
+function simple_clone(estimator::T) where {T}
     kw_params = Dict{Symbol, Any}()
     # cloning the values is scikit-learn's default behaviour. It's ok?
     for (k, v) in get_params(estimator) kw_params[k] = clone_param(v) end
     return T(; kw_params...)
 end
 
-function declare_hyperparameters{T}(estimator_type::Type{T},
-                                    params::Vector{Symbol})
+function declare_hyperparameters(estimator_type::Type{T},
+                                    params::Vector{Symbol}) where {T}
     warn("declare_hyperparameters(...) is deprecated. Use @declare_hyperparameters(...) instead.")
     @eval begin
         ScikitLearnBase.get_params(estimator::$(estimator_type); deep=true) =
