@@ -5,6 +5,7 @@ module ScikitLearnBase
 using Compat
 using Random
 using LinearAlgebra  # necessary for `dot`
+using Statistics     # for `mean`
 
 macro declare_api(api_functions...)
     esc(:(begin
