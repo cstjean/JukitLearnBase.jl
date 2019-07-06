@@ -2,7 +2,6 @@ __precompile__()
 
 module ScikitLearnBase
 
-using Compat
 using Random
 using LinearAlgebra  # necessary for `dot`
 using Statistics     # for `mean`
@@ -31,9 +30,9 @@ export BaseEstimator, BaseClassifier, BaseRegressor, declare_hyperparameters,
 # Ideally, all scikit-learn estimators would inherit from BaseEstimator, but
 # it's hard to ask library writers to do that given single-inheritance, so the
 # API doesn't rely on it.
-@compat abstract type BaseEstimator end
-@compat abstract type BaseClassifier <: BaseEstimator end
-@compat abstract type BaseRegressor <: BaseEstimator end
+abstract type BaseEstimator end
+abstract type BaseClassifier <: BaseEstimator end
+abstract type BaseRegressor <: BaseEstimator end
 
 is_classifier(::BaseClassifier) = true
 is_classifier(::BaseRegressor) = false
