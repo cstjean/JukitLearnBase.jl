@@ -1,6 +1,6 @@
 name = "ScikitLearnBase"
 uuid = "6e75b9c4-186b-50bd-896f-2d2496a4843e"
-version = "0.4.1"
+version = "0.5.0"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
