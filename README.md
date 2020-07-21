@@ -26,7 +26,7 @@ For models with simple hyperparameters, it boils down to this:
 ```julia
 import ScikitLearnBase
 
-type NaiveBayes
+mutable struct NaiveBayes
     # The model hyperparameters (not learned from data)
     bias::Float64
 
